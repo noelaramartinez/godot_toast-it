@@ -5,19 +5,22 @@ var initP = Vector2()
 var endP = Vector2()
 var normal = 100
 
-
-#vector final es la interrogante
-#la condición es que el vector que se forma entre end e ini tenga una normal igual a 100
-#10^2 = sqr((ini.x-end.x)^2 + (ini.y-end.y)^2)
-#end.x = ini.x- sqr(100 - (ini.y-end.y)^2)
-#end.y = ini.y- sqr(100 - (ini.x-end.x)^2)
+#obtener el vector unitario en la dirección actual y multiplicarlo por 100, luego obtetner la suma del origen con ese vector 
+#y se obtine el vectro para 'end' máximo
 
 func _draw():
-	color = Color(.2,.8,.7)
+	color = Color(.4,1,.4)
 	var ini = initP
 	var end = endP
+	var normaControl = sqrt(pow(abs(end.x-ini.x),2) + pow(abs(end.y-ini.y),2))
+	if normaControl>100:
+		var aux = end - ini
+		aux = aux.normalized()*100
+		end = ini + aux
 	draw_line(ini, end, color)
 
 func _process(delta):
 	update()
 
+func drawLine():
+	_draw()

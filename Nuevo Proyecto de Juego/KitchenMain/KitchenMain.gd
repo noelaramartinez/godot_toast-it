@@ -72,13 +72,12 @@ func _input(event):
 		var vectorAux = mouseClickPos - init_player_position
 		$Control.initP = init_player_position
 		$Control.endP = mouseClickPos
-		$Control._draw()
-		
+		$Control.drawLine()
 	if event.is_action_released("click") and dragging and !is_fired:
 		dragging = false
 		rotate_player = false
 		is_fired = true
-	#if pos_x > screen_size.x || pos_y >screen_size.y || pos_x < 0 || pos_y < 0:
+		hide_previous_trace()
 	if $Bread.get_position().x-breadSizeMargin > screen_size.x || $Bread.get_position().y-breadSizeMargin >screen_size.y || $Bread.get_position().x+breadSizeMargin < 0 || $Bread.get_position().y+breadSizeMargin < 0:
 		$Bread/Trial.setDraw(false)
 		var children = $Bread.get_child($Bread.get_child_count()-1)
@@ -113,10 +112,6 @@ func reset():
 	var children = $Bread.get_child($Bread.get_child_count()-1)
 	children.width = 2
 	children.default_color = "#1f667fff"
-	if $Bread.get_child_count()>2:
-		var prevTrace = Line2D
-		prevTrace = $Bread.get_child($Bread.get_child_count()-2)
-		prevTrace.hide()
 	$Bread.print_tree_pretty()
 	is_fired = false
 	$Bread.start(VecInitPosBread)
@@ -126,5 +121,12 @@ func reset():
 
 func on_butter_grabbed():
 	score += 10
-	$HUD/score_lbl.set_text(str(score))	
+	$HUD/score_lbl.set_text(str(score))
+
+func hide_previous_trace():
+	if $Bread.get_child_count()>2:
+		var prevTrace = Line2D
+		prevTrace = $Bread.get_child($Bread.get_child_count()-2)
+		prevTrace.hide()
+
 
