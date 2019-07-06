@@ -8,6 +8,9 @@ var mouseClickPos = Vector2()
 var is_fired = false
 var screen_size = Vector2()
 var initVelVector = Vector2()
+var ini = Vector2()
+var end = Vector2()
+var color
 
 var VecInitPosBread
 var VecInitPosToaster
@@ -69,10 +72,17 @@ func _input(event):
 		initVelVector = mouseClickPos - VecInitPosBread
 		var magInitVelVect = clamp(sqrt(initVelVector.x*initVelVector.x + initVelVector.y*initVelVector.y),10,controlRange)
 		init_vel = 10 + magInitVelVect/20
-		var vectorAux = mouseClickPos - init_player_position
-		$Control.initP = init_player_position
-		$Control.endP = mouseClickPos
-		$Control.drawLine()
+		ini = init_player_position
+		end = mouseClickPos
+		color = Color(.4,1,.4)
+		var normaControl = sqrt(pow(abs(end.x-ini.x),2) + pow(abs(end.y-ini.y),2))
+		if normaControl>100:
+			var aux = end - ini
+			aux = aux.normalized()*100
+			end = ini + aux
+		#$Control.initP = init_player_position
+		#$Control.endP = mouseClickPos
+		#$Control.drawLine()
 	if event.is_action_released("click") and dragging and !is_fired:
 		dragging = false
 		rotate_player = false
@@ -93,6 +103,7 @@ func _physics_process(delta):
 		init_angle = radianes_a_mover
 	if is_fired:
 		parabolic_movement(delta * coef_mov)
+	update()
 
 func rotateVectorNormal(radianes_a_mover):
 	vectorNormal =  (VecInitPosBread - vectorRefNormal).rotated(radianes_a_mover + PI)
@@ -112,7 +123,7 @@ func reset():
 	var children = $Bread.get_child($Bread.get_child_count()-1)
 	children.width = 2
 	children.default_color = "#1f667fff"
-	$Bread.print_tree_pretty()
+	#$Bread.print_tree_pretty()
 	is_fired = false
 	$Bread.start(VecInitPosBread)
 	pos_x = 0
@@ -121,7 +132,7 @@ func reset():
 
 func on_butter_grabbed():
 	score += 10
-	$HUD/score_lbl.set_text(str(score))
+	$HUD/score_lbl.set_text("Score: " + str(score))
 
 func hide_previous_trace():
 	if $Bread.get_child_count()>2:
@@ -129,4 +140,14 @@ func hide_previous_trace():
 		prevTrace = $Bread.get_child($Bread.get_child_count()-2)
 		prevTrace.hide()
 
+func _draw():
+	color = Color(.4,1,.4)
+	var normaControl = sqrt(pow(abs(end.x-ini.x),2) + pow(abs(end.y-ini.y),2))
+	if normaControl>100:
+		var aux = end - ini
+		aux = aux.normalized()*100
+		end = ini + aux
+	drawLine(ini, end, color)
 
+func drawLine(ini, end, color):
+	draw_line(ini, end, color)
